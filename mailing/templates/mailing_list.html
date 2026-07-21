@@ -1,0 +1,15 @@
+<h1>Рассылки</h1>
+<a href="{% url 'mailings:create' %}">Создать новую рассылку</a>
+<ul>
+    {% for mailing in mailings %}
+        <li>
+            {{ mailing.id }} | Статус: {{ mailing.status }} |
+            Тема: {{ mailing.message.subject }}
+            (<a href="{% url 'mailings:detail' mailing.pk %}">смотреть</a>
+             | <a href="{% url 'mailings:update' mailing.pk %}">ред.</a>
+             | <a href="{% url 'mailings:delete' mailing.pk %}">удалить</a>)
+        </li>
+    {% empty %}
+        <li>Рассылок пока нет.</li>
+    {% endfor %}
+</ul>

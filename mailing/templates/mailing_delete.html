@@ -1,0 +1,10 @@
+<h1>Удаление рассылки #{{ mailing.id }}</h1>
+<p>Вы уверены, что хотите удалить рассылку "{{ mailing.message.subject }}"?</p>
+<p>Это действие необратимо.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Да, удалить</button>
+</form>
+
+<a href="{% url 'mailings:detail' mailing.pk %}">Нет, вернуться</a>
