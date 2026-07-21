@@ -1,12 +1,8 @@
-<!-- Шапка сайта -->
 <div class="container py-3 border-bottom">
     <div class="row align-items-center">
         <div class="col-md-auto text-end me-4">
-            <a href="#" class="text-decoration-none"><span class="me-1">☎️</span>8 (800) 555 35 35</a><br>
-            <a href="#" class="text-decoration-none"><span class="me-1">📧</span>support@mailingservice.ru</a>
-        </div>
-        <div class="col-md-auto">
-            <img src="/static/logo.png" alt="Логотип NotiSend" height="60"/>
+            <a  class="text-decoration-none"><span class="me-1"></span>8 (800) 555 35 35</a><br>
+            <a  class="text-decoration-none"><span class="me-1"></span>support@mailingservice.ru</a>
         </div>
         <div class="col-md-auto ms-auto d-flex gap-3">
             {% if not user %}
@@ -24,7 +20,7 @@
         <a href="#" class="btn btn-primary px-4">Получатели</a>
 
         <div class="btn-group" role="group">
-       <button type="button" class="btn btn-outline-secondary disabled" data-bs-toggle="tooltip" title="В разработке">Отчеты</button>
+        <button type="button" class="btn btn-outline-secondary disabled" data-bs-toggle="tooltip" title="В разработке">Отчеты</button>
         </div>
 
         {% if not user %}
@@ -32,9 +28,9 @@
             <button type="button" class="btn btn-success px-4">ЗАРЕГИСТРИРОВАТЬСЯ</button>
         {% else %}
             <p class="mb-0 fw-bold me-3">{{user.name}}</p>
-            <a href <button type="button" class="btn btn-outline-secondary disabled" data-bs-toggle="tooltip" title="В разработке">Рассылки</button>
+            <button type="button" class="btn btn-outline-secondary disabled" data-bs-toggle="tooltip" title="В разработке">Рассылки</button>
             <button type="button" class="btn btn-outline-secondary disabled" data-bs-toggle="tooltip" title="В разработке">Новая рассылка</button>
-            ="#" class="btn btn-link p-0 text-decoration-none">Выйти</a>
+            <a href="#" class="btn btn-link p-0 text-decoration-none">Выйти</a>
         {% endif %}
     </nav>
 </div>

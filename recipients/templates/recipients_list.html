@@ -1,0 +1,14 @@
+<h1>Получатели</h1>
+<a href="{% url 'recipients:recipient-add' %}">Добавить получателя</a>
+<ul>
+    {% for recipient in recipients %}
+        <li>
+            {{ recipients.email }}
+            (<a href="{% url 'recipients:recipient-detail' mailing.pk %}">смотреть</a>
+             | <a href="{% url 'recipients:recipient-edit' mailing.pk %}">редактировать</a>
+             | <a href="{% url 'recipients:recipient-delete' mailing.pk %}">удалить</a>)
+        </li>
+    {% empty %}
+        <li>Получателей пока нет.</li>
+    {% endfor %}
+</ul>
