@@ -22,7 +22,7 @@ class Mailing(db_models.Model):
         help_text='До какого момента разрешено выполнять отправку.'
     )
     message = db_models.ForeignKey(
-        'messages.Message',
+        'recipients.Message',
         on_delete=db_models.PROTECT,
         related_name='mailings',
         verbose_name='Сообщение'

@@ -1,13 +1,11 @@
+import locale
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, CreateView, UpdateView, DeleteView, ListView
-from .forms import MailingForm
-
-import locale
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, CreateView, UpdateView, DeleteView, ListView, TemplateView
 from django.utils import timezone
-from mailing.models import Mailing
-from recipients.models import Recipients
+from .forms import MailingForm
+from .models import Mailing
 
 
 class HomeView(TemplateView):
@@ -15,8 +13,11 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         now = timezone.now()
+
+        from django.apps import apps
+        Mailing = apps.get_model('mailing', 'Mailing')
+        Recipients = apps.get_model('recipients', 'Recipients')
 
         total_mailings = Mailing.objects.count()
         active_mailings = Mailing.objects.filter(
@@ -30,44 +31,35 @@ class HomeView(TemplateView):
             'active_mailings': active_mailings,
             'unique_recipients': unique_recipients,
         })
-
         return context
 
     @staticmethod
     def _format_number(value: int) -> str:
-        """
-        Вспомогательный метод для форматирования целых чисел.
-        Использует настройки текущей локали ОС.
-        """
         if value is None:
             return "—"
-
         formatted = locale.format_string("%d", value, grouping=True)
         return formatted
 
 
 class ManagerOrAuthorRequiredMixin(UserPassesTestMixin):
-    """Миксин для проверки прав: автор или суперпользователь."""
-
     def test_func(self):
         obj = self.get_object()
         return self.request.user.is_superuser or obj.author == self.request.user
 
 
 class MailingListView(LoginRequiredMixin, ListView):
-    """Список всех рассылок."""
-    model = Mailing
+    model = 'mailing.Mailing'
     template_name = "mailing:mailing_list.html"
     context_object_name = "mailings"
     paginate_by = 20
 
     def get_queryset(self):
+        # select_related и prefetch_related тоже умеют работать со строками
         return Mailing.objects.select_related('message').prefetch_related('recipients').order_by('-start_time')
 
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
-    """Детальный просмотр рассылки."""
-    model = Mailing
+    model = 'mailing.Mailing'
     template_name = "mailing_detail.html"
     context_object_name = "mailing"
 
@@ -76,8 +68,7 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
 
 
 class MailingCreateView(LoginRequiredMixin, CreateView):
-    """Создание новой рассылки."""
-    model = Mailing
+    model = 'mailing.Mailing'
     form_class = MailingForm
     template_name = "mailing_form.html"
     success_url = reverse_lazy('mailings:list')
@@ -88,8 +79,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
 
 
 class MailingUpdateView(LoginRequiredMixin, ManagerOrAuthorRequiredMixin, UpdateView):
-    """Редактирование существующей рассылки."""
-    model = Mailing
+    model = 'mailing.Mailing'
     form_class = MailingForm
     template_name = "mailing_form.html"
     context_object_name = "mailing"
@@ -97,10 +87,7 @@ class MailingUpdateView(LoginRequiredMixin, ManagerOrAuthorRequiredMixin, Update
 
 
 class MailingDeleteView(LoginRequiredMixin, ManagerOrAuthorRequiredMixin, DeleteView):
-    """Удаление рассылки."""
-    model = Mailing
+    model = 'mailing.Mailing'
     template_name = "mailing_confirm_delete.html"
     context_object_name = "mailing"
     success_url = reverse_lazy('mailings:list')
-
-
