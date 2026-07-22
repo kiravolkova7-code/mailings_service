@@ -3,7 +3,11 @@ from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db import models as db_models
+from django.contrib.auth import get_user_model
 
+from config import settings
+
+User = get_user_model()
 
 
 class Mailing(db_models.Model):
@@ -37,13 +41,13 @@ class Mailing(db_models.Model):
     created_at = db_models.DateTimeField(auto_now_add=True, verbose_name='Создана в системе')
     updated_at = db_models.DateTimeField(auto_now=True, verbose_name='Обновлена в системе')
 
-    # created_by = db_models.ForeignKey(
-    #     settings.AUTH_USER_MODEL,
-    #     null=True,
-    #     blank=True,
-    #     on_delete=db_models.SET_NULL,
-    #     verbose_name='Автор рассылки'
-    # )
+    created_by = db_models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=db_models.SET_NULL,
+        verbose_name='Автор рассылки'
+    )
 
     class Meta:
         verbose_name = 'Рассылка'
@@ -63,6 +67,26 @@ class Mailing(db_models.Model):
             return 'running'
         else:
             return 'finished'
+
+    @property
+    def total_attempts(self):
+        """Общее количество попыток отправки (равно количеству записей в SendLog)"""
+        return self.logs.count()
+
+    @property
+    def successful_attempts(self):
+        """Количество успешных отправок"""
+        return self.logs.filter(status='success').count()
+
+    @property
+    def failed_attempts(self):
+        """Количество неуспешных отправок"""
+        return self.logs.filter(status='Не успешно').count()
+
+    @property
+    def messages_sent(self):
+        """Фактически доставленные сообщения. В вашей модели это дублирует success."""
+        return self.successful_attempts
 
     def clean(self):
         super().clean()

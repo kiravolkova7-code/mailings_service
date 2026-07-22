@@ -20,9 +20,7 @@
         <a href="{% url 'recipients:recipients-list' %}" class="btn btn-primary px-4">Получатели</a>
         <a href="{% url 'recipients:message-list' %}" class="btn btn-primary px-4">Сообщения</a>
 
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary disabled" data-bs-toggle="tooltip" title="В разработке">Отчеты</button>
-        </div>
+        <a href="{% url 'mailings:report-list' %}" class="btn btn-primary px-4">Отчеты</a>
 
         {% if not user.is_authenticated %}
             <a href="{% url 'account_login' %}" class="btn btn-outline-success ms-auto px-4">ВОЙТИ</a>
@@ -35,3 +33,4 @@
         {% endif %}
     </nav>
 </div>
+

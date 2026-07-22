@@ -9,7 +9,19 @@
         <div class="col-md-6">
             <strong>Сообщение:</strong> <a href="{% url 'recipients:message-detail' pk=mailing.message.pk %}">{{ mailing.message.subject }}</a>
         </div>
-        <div class="col-md-6"><strong>Статус:</strong> <span class="badge text-bg-{% if mailing.status == 'running' %}success{% elif mailing.status == 'created' %}secondary{% else %}info{% endif %}">{{ mailing.get_status_display }}</span></div>
+        <div class="col-md-6"><strong>Статус:</strong>
+                <span class="text-{% if mailing.status == 'running' %}success{% elif mailing.status == 'created' %}secondary{% else %}muted fw-light fst-italic{% endif %}">
+                    {% if mailing.status == 'created' %}
+                        Создана
+                    {% elif mailing.status == 'running' %}
+                        Запущена
+                    {% elif mailing.status == 'finished' %}
+                        Завершена
+                    {% else %}
+                        Неизвестно
+                    {% endif %}
+                </span>
+        </div>
         <div class="col-md-6"><strong>Начало:</strong> {{ mailing.start_time|date:"d.m.Y H:i" }}</div>
         <div class="col-md-6"><strong>Окончание:</strong> {{ mailing.end_time|date:"d.m.Y H:i" }}</div>
         <div class="col-12"><strong>Получатели ({{ mailing.recipients.count }}):</strong></div>

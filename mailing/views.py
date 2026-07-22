@@ -74,7 +74,9 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('mailings:mailing-list')
 
     def form_valid(self, form):
+        form.instance.created_by = self.request.user
         return super().form_valid(form)
+
 
 
 class MailingUpdateView(LoginRequiredMixin, UpdateView):
@@ -129,3 +131,43 @@ class MailingDeleteView(LoginRequiredMixin, ManagerOrAuthorRequiredMixin, Delete
     template_name = "mailing_delete.html"
     context_object_name = "mailing"
     success_url = reverse_lazy('mailings:mailing-list')
+
+
+# mailing/views.py
+from django.db.models import Count, Q
+from .models import Mailing
+
+
+# mailing/views.py
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Mailing
+
+class ReportListView(LoginRequiredMixin, ListView):
+    model = Mailing
+    template_name = "mailing_report.html"
+    context_object_name = "reports"
+    paginate_by = 20
+
+    def get_queryset(self):
+        return (
+            Mailing.objects.select_related('message', 'created_by')
+            .annotate(
+                logs_count=Count('logs'),
+                success_count=Count('logs', filter=Q(logs__status='success')),
+                fail_count=Count('logs', filter=Q(logs__status='Не успешно'))
+            )
+            .filter(created_by=self.request.user) # <-- Ключевая строка
+            .order_by('-start_time')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        reports_qs = context['reports']  # Это уже аннотированный QuerySet
+
+        context.update({
+            'total_reports': reports_qs.count(),
+            'total_success': sum(report.success_count for report in reports_qs),
+            'total_fail': sum(report.fail_count for report in reports_qs),
+            'search_query': self.request.GET.get('q', ''),
+        })
+        return context
