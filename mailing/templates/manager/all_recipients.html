@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Все клиенты{% endblock %}
+
+{% block content %}
+<h1>Список всех клиентов</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Имя</th>
+            <th>Автор записи</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for recipient in all_recipients %}
+        <tr>
+            <td>{{ recipient.id }}</td>
+            <td>{{ recipient.email }}</td>
+            <td>{{ recipient.first_name }} {{ recipient.last_name }}</td>
+            <td>{% if recipient.created_by %}{{ recipient.created_by.email }}{% else %}—{% endif %}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4" class="text-center">Клиенты не найдены.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

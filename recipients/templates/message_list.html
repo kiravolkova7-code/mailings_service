@@ -14,26 +14,32 @@
             <th scope="col">#</th>
             <th scope="col">Тема письма</th>
             <th scope="col">Длина текста</th>
-            <th scope="col" class="text-end">Действия</th>
+            <!-- Проверяем права именно для сообщения из цикла -->
+            {% if user.is_superuser or user.groups.filter.name == 'Менеджер' %}
+                <th scope="col" class="text-end">Действия</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
-        {% for message in object_list %}
-        <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td>
-                <a href="{% url 'recipients:message-detail' pk=message.pk %}">{{ message.subject }}</a>
-            </td>
-            <td>{{ message.body_message|length }} символов</td>
-            <td class="text-end">
-                <a href="{% url 'recipients:message-edit' pk=message.pk %}" class="btn btn-sm btn-outline-warning me-2">Ред.</a>
-                <a href="{% url 'recipients:message-delete' pk=message.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
-            </td>
-        </tr>
+        {% for message in messages %} <!-- Исправлено на context_object_name -->
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>
+                    <a href="{% url 'recipients:message-detail' pk=message.pk %}">{{ message.subject }}</a>
+                </td>
+                <td>{{ message.body_message|length }} символов</td>
+                <td class="text-end">
+                    <!-- Обычный пользователь не видит кнопки, если сообщение не его -->
+                    {% if message.created_by == user or user.groups.filter.name == 'Менеджер' %}
+                        <a href="{% url 'recipients:message-edit' pk=message.pk %}" class="btn btn-sm btn-outline-warning me-2">Ред.</a>
+                        <a href="{% url 'recipients:message-delete' pk=message.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                    {% endif %}
+                </td>
+            </tr>
         {% empty %}
-        <tr>
-            <td colspan="4" class="text-center text-muted py-3">Список сообщений пуст.</td>
-        </tr>
+            <tr>
+                <td colspan="4" class="text-center text-muted py-3">Список сообщений пуст.</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

@@ -15,27 +15,38 @@
             <th scope="col">ФИО</th>
             <th scope="col">Email</th>
             <th scope="col">Комментарий</th>
-            <th scope="col" class="text-end">Действия</th>
+            {# Проверяем права один раз для шапки таблицы #}
+            {% if user.groups.filter.name == 'Менеджер' or perms.recipients.change_recipient %}
+                <th scope="col" class="text-end">Действия</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
         {% for recipient in object_list %}
-        <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td>
-                <a href="{% url 'recipients:recipients-detail' pk=recipient.pk %}">{{ recipient.full_name|default:"—" }}</a>
-            </td>
-            <td>{{ recipient.email }}</td>
-            <td>{{ recipient.comment|truncatechars:50|default:"—" }}</td>
-            <td class="text-end">
-                <a href="{% url 'recipients:recipients-edit' pk=recipient.pk %}" class="btn btn-sm btn-outline-warning me-2">Ред.</a>
-                <a href="{% url 'recipients:recipients-delete' pk=recipient.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
-            </td>
-        </tr>
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>
+                    <a href="{% url 'recipients:recipients-detail' pk=recipient.pk %}">{{ recipient.full_name|default:"—" }}</a>
+                </td>
+                <td>{{ recipient.email }}</td>
+                <td>{{ recipient.comment|truncatechars:50|default:"—" }}</td>
+
+                {# Блок с действиями #}
+                <td class="text-end">
+                    {% if user.groups.filter.name == 'Менеджер' %}
+                        <a href="{% url 'recipients:recipients-edit' pk=recipient.pk %}" class="btn btn-sm btn-outline-warning me-2">Ред.</a>
+                        <a href="{% url 'recipients:recipients-delete' pk=recipient.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+
+                    {% elif recipient.created_by == user %}
+                        <a href="{% url 'recipients:recipients-edit' pk=recipient.pk %}" class="btn btn-sm btn-outline-warning me-2">Ред.</a>
+                        <a href="{% url 'recipients:recipients-delete' pk=recipient.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                    {% endif %}
+                </td>
+            </tr>
         {% empty %}
-        <tr>
-            <td colspan="5" class="text-center text-muted py-3">Список получателей пуст.</td>
-        </tr>
+            <tr>
+                <td colspan="5" class="text-center text-muted py-3">Список получателей пуст.</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

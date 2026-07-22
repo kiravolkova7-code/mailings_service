@@ -27,6 +27,10 @@
             <a href="{% url 'account_signup' %}" class="btn btn-success px-4">ЗАРЕГИСТРИРОВАТЬСЯ</a>
         {% else %}
             <p class="mb-0 fw-bold me-3">{{ user.email }}</p>
+
+            {% if user == mailing.created_by or user.groups.filter.name == 'Менеджер' %}
+                <a href="{% url 'mailings:manager-dashboard' %}" class="btn btn-primary px-4">Панель управления</a>
+            {% endif %}
             <a href="{% url 'mailings:mailing-list' %}" class="btn btn-primary px-4">Рассылки</a>
             <a href="{% url 'mailings:mailing-create' %}" class="btn btn-primary px-4">Новая рассылка</a>
             {# <a href="{% url 'account_logout' %}" class="btn btn-link p-0 align-self-center">Выйти</a> #}
