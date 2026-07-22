@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Детали рассылки #{{ mailing.pk }}{% endblock %}
+
+{% block content %}
+<h2>Информация о рассылке</h2>
+<div class="card bg-light mb-4">
+    <div class="card-body row g-3">
+        <div class="col-md-6">
+            <strong>Сообщение:</strong> <a href="{% url 'recipients:message-detail' pk=mailing.message.pk %}">{{ mailing.message.subject }}</a>
+        </div>
+        <div class="col-md-6"><strong>Статус:</strong>
+                <span class="text-{% if mailing.status == 'running' %}success{% elif mailing.status == 'created' %}secondary{% else %}muted fw-light fst-italic{% endif %}">
+                    {% if mailing.status == 'created' %}
+                        Создана
+                    {% elif mailing.status == 'running' %}
+                        Запущена
+                    {% elif mailing.status == 'finished' %}
+                        Завершена
+                    {% else %}
+                        Неизвестно
+                    {% endif %}
+                </span>
+        </div>
+        <div class="col-md-6"><strong>Начало:</strong> {{ mailing.start_time|date:"d.m.Y H:i" }}</div>
+        <div class="col-md-6"><strong>Окончание:</strong> {{ mailing.end_time|date:"d.m.Y H:i" }}</div>
+        <div class="col-12"><strong>Получатели ({{ mailing.recipients.count }}):</strong></div>
+        <div class="col-12">
+            {% for recipient in mailing.recipients.all %}
+                <span class="badge text-bg-info me-1 mb-1">{{ recipient.email }}</span>
+            {% empty %}
+                <em>Не выбрано</em>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<h3>Логи отправки ({{ mailing.logs.count }})</h3>
+<div class="table-responsive">
+    <table class="table table-sm table-hover bg-white shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Время</th>
+                <th>Получатель</th>
+                <th>Статус</th>
+                <th>Ответ сервера</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in mailing.logs.all %}
+            <tr>
+                <td>{{ log.attempt_time|date:"d.m.Y H:i:s" }}</td>
+                <td>{{ log.recipient.email }}</td>
+                <td><span class="text-{% if log.status == 'success' %}success{% else %}danger{% endif %} fw-semibold">{{ log.get_status_display }}</span></td>
+                <td><code>{{ log.server_response|truncatechars:80|default:"—" }}</code></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center text-muted py-3">Лог пуст.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<a href="{% url 'mailings:mailing-list' %}" class="btn btn-secondary mt-3">← Вернуться к списку</a>
+{% endblock %}

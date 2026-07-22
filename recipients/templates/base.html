@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MailingService{% endblock %}</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+{% include 'menu.html' %}
+
+<div class="container my-5">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<div class="container mt-5 mb-3 small text-muted">
+    <hr>
+    © 2026 MailingService. Все права защищены.
+</div>
+
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

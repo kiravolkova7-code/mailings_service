@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Панель менеджера{% endblock %}
+
+{% block content %}
+<h1>Панель управления сервисом</h1>
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Всего рассылок</h5>
+                <p class="card-text display-4">{{ total_mailings }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Активны сейчас</h5>
+                <p class="card-text display-4">{{ active_mailings }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Клиентов</h5>
+                <p class="card-text display-4">{{ total_recipients }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>Статусы рассылок</h3>
+<ul class="list-group">
+    {% for item in status_counts %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ item.status }}
+            <span class="badge bg-primary rounded-pill">{{ item.count }}</span>
+        </li>
+    {% empty %}
+        <li class="list-group-item">Нет данных.</li>
+    {% endfor %}
+</ul>
+
+<h3 class="mt-4">Общая статистика отправок</h3>
+<div class="alert alert-light">
+    Попыток: {{ logs_agg.total_attempts|default:0 }} | 
+    Успешно: {{ logs_agg.successes|default:0 }} | 
+    Ошибок: {{ logs_agg.failures|default:0 }}
+</div>
+<a href="{% url 'mailings:manager-all-mailings' %}" class="btn btn-outline-dark me-2">Все рассылки</a>
+<a href="{% url 'mailings:manager-all-recipients' %}" class="btn btn-outline-dark">Все клиенты</a>
+{% endblock %}

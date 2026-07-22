@@ -7,4 +7,12 @@ pathspec~=1.1.1
 click~=8.4.2
 isort~=8.0.1
 pytokens~=0.4.1
-django~=6.0.7
+django~=6.0.
+python-dotenv~=1.2.2
+psycopg2~=2.9.12
+ipython~=9.15.0
+django-localflavor~=5.0
+python-stdnum~=2.2
+django-allauth~=65.18.0
+redis~=8.0.1
+

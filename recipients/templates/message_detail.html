@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ message.subject }} Сообщение {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">
+                <h2 class="m-0">{{ message.subject }}</h2>
+            </div>
+            <div class="card-body">
+                <pre style="white-space: pre-wrap;">{{ message.body_message|linebreaksbr }}</pre>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <a href="{% url 'recipients:message-list' %}" class="btn btn-outline-primary">Назад</a>
+                <a href="{% url 'recipients:message-edit' pk=message.pk %}" class="btn btn-link p-1"><span data-feather="edit"></span> Редактировать</a>
+                <a href="{% url 'recipients:message-delete' pk=message.pk %}" class="btn btn-link p-1 text-danger"><span data-feather="trash-2"></span> Удалить</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<script>
+feather.replace();
+</script>
+{% endblock %}

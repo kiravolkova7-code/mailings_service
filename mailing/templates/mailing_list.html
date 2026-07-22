@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Список рассылок{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Активные рассылки</h2>
+
+
+</div>
+
+<table class="table table-striped table-hover bg-white shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Тема сообщения</th>
+            <th scope="col">Период действия</th>
+            <th scope="col">Статус</th>
+            {% if user == mailing.created_by or user.groups.filter.name == 'Менеджер' %}
+                <th scope="col" class="text-end">Действия</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for mailing in mailings %}
+        <tr>
+            <th scope="row">{{ forloop.counter|add:page_obj.start_index|default:1|add:"-1" }}</th>
+            <td><a href="{% url 'mailings:mailing-detail' pk=mailing.pk %}">{{ mailing.message.subject }}</a></td>
+            <td>
+                {{ mailing.start_time|date:"d.m.Y H:i" }} – {{ mailing.end_time|date:"d.m.Y H:i" }}
+            </td>
+            <td>
+
+                <span class="text-{% if mailing.status == 'running' %}success{% elif mailing.status == 'created' %}secondary{% else %}muted fw-light fst-italic{% endif %}">
+                    {% if mailing.status == 'created' %}
+                        Создана
+                    {% elif mailing.status == 'running' %}
+                        Запущена
+                    {% elif mailing.status == 'finished' %}
+                        Завершена
+                    {% else %}
+                        Неизвестно
+                    {% endif %}
+                </span>
+
+            </td>
+            <td class="text-end">
+                {% if user == mailing.created_by or user.groups.filter.name == 'Менеджер' %}
+                    <a href="{% url 'mailings:mailing-update' pk=mailing.pk %}" class="btn btn-sm btn-outline-warning me-2">Изменить</a>
+                    <a href="{% url 'mailings:mailing-delete' pk=mailing.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                    <a href="{% url 'mailings:send-mailing' mailing.pk %}" class="btn btn-sm btn-outline-warning">▶ Запустить</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center text-muted py-3">Рассылок пока нет.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
