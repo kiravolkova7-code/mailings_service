@@ -15,7 +15,6 @@
             <th scope="col">ФИО</th>
             <th scope="col">Email</th>
             <th scope="col">Комментарий</th>
-            {# Проверяем права один раз для шапки таблицы #}
             {% if user.groups.filter.name == 'Менеджер' or perms.recipients.change_recipient %}
                 <th scope="col" class="text-end">Действия</th>
             {% endif %}

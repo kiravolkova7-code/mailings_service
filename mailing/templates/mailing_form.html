@@ -33,7 +33,6 @@
                 <form method="post" novalidate>
                     {% csrf_token %}
 
-                    {# Блок полей формы (оставьте вашу верстку или используйте form.as_p) #}
                     <div class="row g-3">
                         <div class="col-md-6">{{ form.message.label_tag }}{{ form.message }}</div>
                         <div class="col-md-6">{{ form.recipients.label_tag }}{{ form.recipients }}</div>
@@ -44,7 +43,6 @@
                     <div class="d-flex justify-content-between mt-4">
                         <button type="submit" class="btn btn-primary">{% if object %}Сохранить изменения{% else %}Создать рассылку{% endif %}</button>
 
-                        {# Кнопка ручной отправки #}
                         {% if object %}
                             <a href="{% url 'mailings:send-mailing' object.pk %}"
                                class="btn btn-success"
@@ -57,7 +55,6 @@
             </div>
         </div>
 
-        {# БЛОК 5: История попыток #}
         <div class="card shadow-sm border-0 mt-5">
             <div class="card-header bg-white">
                 <h5 class="mb-0">История попыток отправки</h5>

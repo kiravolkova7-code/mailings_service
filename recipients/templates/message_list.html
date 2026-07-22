@@ -14,14 +14,13 @@
             <th scope="col">#</th>
             <th scope="col">Тема письма</th>
             <th scope="col">Длина текста</th>
-            <!-- Проверяем права именно для сообщения из цикла -->
             {% if user.is_superuser or user.groups.filter.name == 'Менеджер' %}
                 <th scope="col" class="text-end">Действия</th>
             {% endif %}
         </tr>
     </thead>
     <tbody>
-        {% for message in messages %} <!-- Исправлено на context_object_name -->
+        {% for message in messages %}
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td>
@@ -29,7 +28,6 @@
                 </td>
                 <td>{{ message.body_message|length }} символов</td>
                 <td class="text-end">
-                    <!-- Обычный пользователь не видит кнопки, если сообщение не его -->
                     {% if message.created_by == user or user.groups.filter.name == 'Менеджер' %}
                         <a href="{% url 'recipients:message-edit' pk=message.pk %}" class="btn btn-sm btn-outline-warning me-2">Ред.</a>
                         <a href="{% url 'recipients:message-delete' pk=message.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>

@@ -9,7 +9,7 @@ def execute_mailing(mailing_id: int):
     print(f"\n[SERVICE DEBUG] Функция запущена с ID: {mailing_id}")
 
     try:
-        mailing = Mailing.objects.select_related('message').prefetch_related('recipients').get(pk=mailing_id)
+        mailing = Mailing.objects.select_related("message").prefetch_related("recipients").get(pk=mailing_id)
         print(f"[SERVICE DEBUG] Объект Mailing загружен. Subject: '{mailing.message.subject}'")
     except Mailing.DoesNotExist:
         print(f"[SERVICE DEBUG ERROR] Рассылка с ID {mailing_id} не найдена!")
@@ -31,7 +31,7 @@ def execute_mailing(mailing_id: int):
     with transaction.atomic():
         for idx, recipient in enumerate(recipients_qs):
             response_text = None
-            log_status = 'success'
+            log_status = "success"
 
             print(f"[SERVICE DEBUG LOOP] ---> Итерация {idx + 1}/{total_count}. Email: {recipient.email}")
 
@@ -47,18 +47,19 @@ def execute_mailing(mailing_id: int):
                 print(f"[SERVICE DEBUG SEND SUCCESS] Письмо отправлено на {recipient.email}")
 
             except Exception as e:
-                log_status = 'Не успешно'
+                log_status = "Не успешно"
                 response_text = str(e)
                 print(f"[SERVICE DEBUG SEND FAILED] ОШИБКА на {recipient.email}: {response_text}")
 
             finally:
-                # ЭТОТ БЛОК ДОЛЖЕН СРАБОТАТЬ ДАЖЕ ЕСЛИ send_mail УПАЛ
-                print(f"[SERVICE DEBUG DB WRITE] Создаю запись SendLog для {recipient.email} со статусом: {log_status}")
+                print(
+                    f"[SERVICE DEBUG DB WRITE] Создаю запись SendLog для {recipient.email} со статусом: {log_status}"
+                )
                 created_log = SendLog.objects.create(
                     mailing=mailing,
                     recipient=recipient,
                     status=log_status,
-                    server_response=response_text[:2000] if response_text else None
+                    server_response=response_text[:2000] if response_text else None,
                 )
                 print(f"[SERVICE DEBUG DB WRITE SUCCESS] Запись создана с PK: {created_log.pk}\n")
 

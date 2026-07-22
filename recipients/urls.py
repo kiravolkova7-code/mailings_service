@@ -2,11 +2,16 @@ from django.urls import path
 from recipients.apps import RecipientsConfig
 
 from recipients.views import (
-    RecipientsDetailView, RecipientsCreateView,
-    RecipientsUpdateView, RecipientsDeleteView,
-    MessageDetailView, MessageCreateView,
-    MessageDeleteView, MessageUpdateView,
-    RecipientList, MessageList
+    RecipientsDetailView,
+    RecipientsCreateView,
+    RecipientsUpdateView,
+    RecipientsDeleteView,
+    MessageDetailView,
+    MessageCreateView,
+    MessageDeleteView,
+    MessageUpdateView,
+    RecipientList,
+    MessageList,
 )
 
 app_name = RecipientsConfig.name
@@ -22,4 +27,4 @@ urlpatterns = [
     path("message/add/", MessageCreateView.as_view(), name="message-create"),
     path("message/<int:pk>/edit/", MessageUpdateView.as_view(), name="message-edit"),
     path("message/<int:pk>/delete/", MessageDeleteView.as_view(), name="message-delete"),
-    ]
+]
