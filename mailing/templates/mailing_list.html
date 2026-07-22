@@ -16,7 +16,9 @@
             <th scope="col">Тема сообщения</th>
             <th scope="col">Период действия</th>
             <th scope="col">Статус</th>
-            <th scope="col" class="text-end">Действия</th>
+            {% if user == mailing.created_by or user.groups.filter.name == 'Менеджер' %}
+                <th scope="col" class="text-end">Действия</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -43,9 +45,11 @@
 
             </td>
             <td class="text-end">
-                <a href="{% url 'mailings:mailing-update' pk=mailing.pk %}" class="btn btn-sm btn-outline-warning me-2">Изменить</a>
-                <a href="{% url 'mailings:mailing-delete' pk=mailing.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
-                <a href="{% url 'mailings:send-mailing' mailing.pk %}" class="btn btn-sm btn-outline-warning">  ▶ Запустить </a>
+                {% if user == mailing.created_by or user.groups.filter.name == 'Менеджер' %}
+                    <a href="{% url 'mailings:mailing-update' pk=mailing.pk %}" class="btn btn-sm btn-outline-warning me-2">Изменить</a>
+                    <a href="{% url 'mailings:mailing-delete' pk=mailing.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                    <a href="{% url 'mailings:send-mailing' mailing.pk %}" class="btn btn-sm btn-outline-warning">▶ Запустить</a>
+                {% endif %}
             </td>
         </tr>
         {% empty %}
