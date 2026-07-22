@@ -17,9 +17,9 @@
                 {% endif %}
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
-                <a href="{% url 'recipients_list' %}" class="btn btn-outline-primary">Назад</a>
-                <a href="{% url 'recipient_update' pk=recipient.pk %}" class="btn btn-link p-1"><span data-feather="edit"></span> Редактировать</a>
-                <a href="{% url 'recipient_delete' pk=recipient.pk %}" class="btn btn-link p-1 text-danger"><span data-feather="trash-2"></span> Удалить</a>
+                <a href="{% url 'recipients:recipients-list' %}" class="btn btn-outline-primary">Назад</a>
+                <a href="{% url 'recipients:recipients-edit' pk=recipient.pk %}" class="btn btn-link p-1"><span data-feather="edit"></span> Редактировать</a>
+                <a href="{% url 'recipients:recipients-delete' pk=recipient.pk %}" class="btn btn-link p-1 text-danger"><span data-feather="trash-2"></span> Удалить</a>
             </div>
         </div>
     </div>

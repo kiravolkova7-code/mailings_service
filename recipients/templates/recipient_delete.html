@@ -11,9 +11,9 @@
     
     <form method="post" action=".">
         {% csrf_token %}
-        <input type="hidden" name="next" value="{% url 'recipients_list' %}"/>
+        <input type="hidden" name="next" value="{% url 'recipients:recipients-list' %}"/>
         <button type="submit" class="btn btn-danger">Да, удалить</button>
-        <a href="#" class="btn btn-outline-secondary ms-2">Нет, отменить</a>
+        <a href="{% url 'recipients:recipients-list' %}" class="btn btn-outline-secondary ms-2">Нет, отменить</a>
     </form>
 </div>
 {% endblock %}

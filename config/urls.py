@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.urls import path, include
 
@@ -8,5 +7,5 @@ urlpatterns = [
     path("recipients/", include("recipients.urls", namespace="recipients")),
     path("message/", include("recipients.urls", namespace="message")),
     path("mailings/", include("mailing.urls", namespace="mailings")),
-    # path('accounts/', include('users.urls', namespace="login")),
+    path('accounts/', include('allauth.urls')),
 ]

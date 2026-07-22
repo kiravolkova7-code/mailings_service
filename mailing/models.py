@@ -77,9 +77,9 @@ class Mailing(db_models.Model):
 
 
 class SendLog(models.Model):
-    SEND_STATUS_CHOICES = [
+    STATUS_CHOICES = [
         ('success', ('Успешно')),
-        ('failed', ('Не успешно')),
+        ('Не успешно', ('Не успешно')),
     ]
 
     mailing = models.ForeignKey(
@@ -100,7 +100,7 @@ class SendLog(models.Model):
     )
     status = models.CharField(
         max_length=10,
-        choices=SEND_STATUS_CHOICES,
+        choices=STATUS_CHOICES,
         verbose_name=('Статус')
     )
     server_response = models.TextField(

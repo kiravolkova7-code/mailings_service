@@ -1,3 +1,4 @@
+# recipients/forms.py
 from django import forms
 from .models import Mailing
 from django.utils import timezone
@@ -6,29 +7,22 @@ from django.utils import timezone
 class MailingForm(forms.ModelForm):
     """Форма для создания и редактирования рассылки."""
 
-    message = forms.ModelChoiceField(
-        queryset=None,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Сообщение',
-        required=True
-    )
-
     class Meta:
         model = Mailing
-
-        fields = ['start_time', 'end_time', 'recipients']
+        fields = ['message', 'start_time', 'end_time', 'recipients']
 
         widgets = {
-            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'message': forms.Select(attrs={'class': 'form-select'}),
+            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'recipients': forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if 'message' in self.fields:
-            self.fields['message'].queryset = self._meta.model.message.field.related_model.objects.all()
+        self.fields['message'].queryset = Mailing._meta.get_field('message').related_model.objects.all()
+        self.fields['message'].empty_label = "-- Выберите сообщение --"
 
         for time_field in ['start_time', 'end_time']:
             if time_field in self.fields:

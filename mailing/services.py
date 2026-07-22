@@ -1,67 +1,65 @@
-
-import logging
-import traceback
 from django.utils import timezone
-from django.core.mail import send_mail, BadHeaderError
-import smtplib
+from django.core.mail import send_mail
 from django.conf import settings
+from django.db import transaction
 from .models import Mailing, SendLog
-
-logger = logging.getLogger(__name__)
 
 
 def execute_mailing(mailing_id: int):
+    print(f"\n[SERVICE DEBUG] Функция запущена с ID: {mailing_id}")
+
     try:
         mailing = Mailing.objects.select_related('message').prefetch_related('recipients').get(pk=mailing_id)
+        print(f"[SERVICE DEBUG] Объект Mailing загружен. Subject: '{mailing.message.subject}'")
     except Mailing.DoesNotExist:
-        logger.error(f"Рассылка с ID {mailing_id} не найдена.")
+        print(f"[SERVICE DEBUG ERROR] Рассылка с ID {mailing_id} не найдена!")
         return
 
     now = timezone.now()
     if not (mailing.start_time <= now <= mailing.end_time):
-        allowed_window = f"{mailing.start_time.strftime('%d.%m.%Y %H:%M')} - {mailing.end_time.strftime('%d.%m.%Y %H:%M')}"
-        error_msg = f"Сейчас {now.strftime('%d.%m.%Y %H:%M')}. Рассылку можно запустить только в интервале: {allowed_window}."
-        logger.warning(error_msg)
+        print(f"[SERVICE DEBUG TIME CHECK FAILED] Сейчас {now}, а окно: {mailing.start_time} - {mailing.end_time}")
         return
 
-    recipients_qs = mailing.recipients.all()
+    recipients_qs = mailing.recipients.all()  # Префетч уже сработал выше
     total_count = recipients_qs.count()
+    print(f"[SERVICE DEBUG] Найдено получателей: {total_count}")
 
     if total_count == 0:
-        logger.info(f"В рассылке #{mailing.pk} нет получателей.")
+        print("[SERVICE DEBUG] Получателей нет. Выход.")
         return
 
-    logger.info(f"Старт рассылки #{mailing.pk} для {total_count} получателей.")
+    with transaction.atomic():
+        for idx, recipient in enumerate(recipients_qs):
+            response_text = None
+            log_status = 'success'
 
-    for recipient in recipients_qs:
-        response_text = None
-        log_status = 'success'
+            print(f"[SERVICE DEBUG LOOP] ---> Итерация {idx + 1}/{total_count}. Email: {recipient.email}")
 
-        try:
-            send_mail(
-                subject=mailing.message.subject,
-                message=mailing.message.body_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[recipient.email],
-                fail_silently=False,
-            )
-        except (BadHeaderError, smtplib.SMTPException, ConnectionError) as e:
-            log_status = 'failed'
-            response_text = str(e)
-            logger.error(f"[{log_status.upper()}] Ошибка отправки на {recipient.email}: {response_text}")
+            try:
+                print(f"[SERVICE DEBUG SEND] Пытаюсь отправить письмо...")
+                send_mail(
+                    subject=mailing.message.subject,
+                    message=mailing.message.body_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[recipient.email],
+                    fail_silently=False,
+                )
+                print(f"[SERVICE DEBUG SEND SUCCESS] Письмо отправлено на {recipient.email}")
 
-        except Exception as e:
-            log_status = 'failed'
-            response_text = ''.join(traceback.format_exception(type(e), e, e.__traceback__))
-            logger.exception(f"[CRITICAL] Неожиданная ошибка при отправке на {recipient.email}")
+            except Exception as e:
+                log_status = 'Не успешно'
+                response_text = str(e)
+                print(f"[SERVICE DEBUG SEND FAILED] ОШИБКА на {recipient.email}: {response_text}")
 
+            finally:
+                # ЭТОТ БЛОК ДОЛЖЕН СРАБОТАТЬ ДАЖЕ ЕСЛИ send_mail УПАЛ
+                print(f"[SERVICE DEBUG DB WRITE] Создаю запись SendLog для {recipient.email} со статусом: {log_status}")
+                created_log = SendLog.objects.create(
+                    mailing=mailing,
+                    recipient=recipient,
+                    status=log_status,
+                    server_response=response_text[:2000] if response_text else None
+                )
+                print(f"[SERVICE DEBUG DB WRITE SUCCESS] Запись создана с PK: {created_log.pk}\n")
 
-        finally:
-            SendLog.objects.create(
-                mailing=mailing,
-                recipient=recipient,
-                status=log_status,
-                server_response=response_text[:2000] if response_text else None
-            )
-
-    logger.info(f"Рассылка #{mailing.pk} завершена.")
+    print(f"[SERVICE DEBUG] Рассылка #{mailing.pk} полностью завершена.\n")
