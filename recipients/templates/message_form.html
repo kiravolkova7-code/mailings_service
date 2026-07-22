@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Редактирование письма {% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <form method="post" action="." novalidate>
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="id_subject" class="form-label">Тема письма *</label>
+            {{ form.subject }}
+            {{ form.subject.help_text }}
+            {{ form.subject.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_body_message" class="form-label">Текст письма *</label>
+            {{ form.body_message }}
+            {{ form.body_message.help_text }}
+            {{ form.body_message.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            {% if message.id %}
+                Обновить
+            {% else %}
+                Создать письмо
+            {% endif %}
+        </button>
+        <a href="#" class="btn btn-outline-secondary ms-2">Отмена</a>
+    </form>
+</div>
+{% endblock %}
