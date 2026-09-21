@@ -1,0 +1,55 @@
+{# templates/manager/all_mailings.html #}
+{% extends 'base.html' %}
+
+{% block title %}Все рассылки (Менеджер){% endblock %}
+
+{% block content %}
+<h1>Список всех рассылок системы</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Тема сообщения</th>
+            <th>Автор</th>
+            <th>Период действия</th>
+            <th>Статус</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mailing in all_mailings %}
+            <tr>
+                <td>{{ mailing.pk }}</td>
+                <td>{{ mailing.message.subject }}</td>
+                <td>
+                    {% if mailing.created_by %}
+                        {{ mailing.created_by.username }}
+                    {% else %}
+                        --Система--
+                    {% endif %}
+                </td>
+                <td>
+                    {{ mailing.start_time|date:"d.m.Y H:i" }} – {{ mailing.end_time|date:"d.m.Y H:i" }}
+                </td>
+                <td>
+                    <span class="text-{% if mailing.status == 'running' %}success{% elif mailing.status == 'created' %}secondary{% else %}muted fw-light fst-italic{% endif %}">
+                    {% if mailing.status == 'created' %}
+                        Создана
+                    {% elif mailing.status == 'running' %}
+                        Запущена
+                    {% elif mailing.status == 'finished' %}
+                        Завершена
+                    {% else %}
+                        Неизвестно
+                    {% endif %}
+                    </span>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">Рассылок в системе не найдено.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

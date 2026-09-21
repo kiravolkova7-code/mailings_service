@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Редактирование получателя {% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <form method="post" action="." novalidate>
+        {% csrf_token %}
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="id_first_name" class="form-label">Имя *</label>
+                {{ form.first_name }}
+                {{ form.first_name.help_text }}
+                {{ form.first_name.errors }}
+            </div>
+            <div class="col-md-6">
+                <label for="id_last_name" class="form-label">Фамилия *</label>
+                {{ form.last_name }}
+                {{ form.last_name.help_text }}
+                {{ form.last_name.errors }}
+            </div>
+            <div class="col-md-6">
+                <label for="id_surname" class="form-label">Отчество</label>
+                {{ form.surname }}
+                {{ form.surname.help_text }}
+                {{ form.surname.errors }}
+            </div>
+            <div class="col-md-6">
+                <label for="id_email" class="form-label">Email *</label>
+                {{ form.email }}
+                {{ form.email.help_text }}
+                {{ form.email.errors }}
+            </div>
+            <div class="col-12">
+                <label for="id_comment" class="form-label">Комментарий</label>
+                {{ form.comment }}
+                {{ form.comment.help_text }}
+                {{ form.comment.errors }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">
+            {% if recipient.id %}
+                Обновить
+            {% else %}
+                Сохранить
+            {% endif %}
+        </button>
+        <a href="{% url 'recipients:recipients-list' %}" class="btn btn-outline-secondary ms-2">Отмена</a>
+    </form>
+</div>
+{% endblock %}

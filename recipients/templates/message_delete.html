@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Удаление сообщения{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="alert alert-warning" role="alert">
+        Вы действительно хотите удалить сообщение "{{ message.subject }}"?
+    </div>
+    
+    <form method="post" action=".">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'recipients:message-list' %}"/>
+        <button type="submit" class="btn btn-danger">Да, удалить</button>
+        <a href="{% url 'recipients:message-list' %}" class="btn btn-outline-secondary ms-2">Нет, отменить</a>
+    </form>
+</div>
+{% endblock %}
